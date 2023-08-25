@@ -131,7 +131,7 @@ export default class {
   }
 
   handleShowTickets(e, bills, index) {
-    // Remove click event listeners from all tickets
+    // Supprimer les écouteurs d'événements de clic de tous les tickets
     bills.forEach(bill => {
       $(`#open-bill${bill.id}`).off('click');
     });

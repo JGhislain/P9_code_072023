@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { screen } from "@testing-library/dom"
+import { screen, waitFor } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { fireEvent } from "@testing-library/dom";
@@ -13,6 +13,14 @@ import userEvent from "@testing-library/user-event"
 import router from "../app/Router.js";
 	
 jest.mock("../app/store", () => mockStore)
+
+jest.spyOn(mockStore, "bills").mockImplementation(() => {
+  return {
+    create: jest.fn().mockResolvedValue({ status: 201 }),
+    list: jest.fn().mockResolvedValue({ status: 200 }),
+    update: jest.fn().mockResolvedValue({ status: 201 })
+  }
+});
 	
 describe("Je suis connecté comme un employé et quand je suis sur la page Nouvelle Note puis quand je soumet une nouvelle Note", () => {
 	
@@ -213,3 +221,33 @@ describe("Je suis connecté comme un employé et quand je suis sur la page Nouve
 	})
 	})
 })
+
+// --------------------------------------------------------------------------------------//
+//            Test de la réponse de l'API lors de la mise à jour d'une note              //
+// --------------------------------------------------------------------------------------//
+
+describe("Lorsque j'envoie un nouveau fichier NewBill", () => {
+	test("J'envoie NewBill depuis le mock de l'API mocké", async () => {
+	  jest.spyOn(mockStore, "bills");
+	  const billsList = await mockStore.bills().list();
+	  console.log('billsList:', billsList);  // Ajoutez ceci pour déboguer
+	  expect(billsList.length).toBe(4);
+  
+	  let bill = {
+		email: "employee@test.tld",
+		type: "Transport",
+		name: "Vol bliblablou",
+		amount: "153",
+		date: "2023-08-25",
+		vat: "10",
+		pct: "10",
+		commentary: "un test",
+		fileUrl: "http://127.0.0.1:8080/images/test.jpg",
+		fileName: "test.jpg",
+		status: "pending"
+	  };
+	  mockStore.bills().create(bill);
+	  waitFor(() => expect(billsList.length).toBe(5));
+	});
+  });
+  
