@@ -235,12 +235,12 @@ describe("Lorsque j'envoie un nouveau fichier NewBill", () => {
 			{
 			email: "employee@test.tld",
 			type: "Restaurant",
-			name: "Dinner",
+			name: "Diner",
 			amount: "100",
 			date: "2023-08-01",
 			vat: "20",
 			pct: "30",
-			commentary: "dinner de travail",
+			commentary: "diner de travail",
 			fileUrl: "http://localhost:8080/images/test1.jpg",
 			fileName: "test1.jpg",
 			status: "pending"
