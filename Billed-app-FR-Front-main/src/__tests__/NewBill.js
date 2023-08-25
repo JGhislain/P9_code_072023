@@ -227,27 +227,70 @@ describe("Je suis connecté comme un employé et quand je suis sur la page Nouve
 // --------------------------------------------------------------------------------------//
 
 describe("Lorsque j'envoie un nouveau fichier NewBill", () => {
+	// Description du test unitaire
 	test("J'envoie NewBill depuis le mock de l'API mocké", async () => {
-	  jest.spyOn(mockStore, "bills");
-	  const billsList = await mockStore.bills().list();
-	  console.log('billsList:', billsList);  // Ajoutez ceci pour déboguer
-	  expect(billsList.length).toBe(4);
-  
-	  let bill = {
-		email: "employee@test.tld",
-		type: "Transport",
-		name: "Vol bliblablou",
-		amount: "153",
-		date: "2023-08-25",
-		vat: "10",
-		pct: "10",
-		commentary: "un test",
-		fileUrl: "http://127.0.0.1:8080/images/test.jpg",
-		fileName: "test.jpg",
-		status: "pending"
-	  };
-	  mockStore.bills().create(bill);
-	  waitFor(() => expect(billsList.length).toBe(5));
+		// Initialisation des données mockées
+		let mockBillsList = [
+			//(deux objets "bill" initiaux ici)
+			{
+			email: "employee@test.tld",
+			type: "Restaurant",
+			name: "Dinner",
+			amount: "100",
+			date: "2023-08-01",
+			vat: "20",
+			pct: "30",
+			commentary: "dinner de travail",
+			fileUrl: "http://localhost:8080/images/test1.jpg",
+			fileName: "test1.jpg",
+			status: "pending"
+			},
+			{
+			email: "employee@test.tld",
+			type: "Transport",
+			name: "Uber",
+			amount: "50",
+			date: "2023-08-02",
+			vat: "10",
+			pct: "15",
+			commentary: "Uber vers aéroport",
+			fileUrl: "http://localhost:8080/images/test2.jpg",
+			fileName: "test2.jpg",
+			status: "pending"
+			},
+		];
+
+		// Espionnage et "mocking" du store pour simuler le comportement des méthodes 'list' et 'create'
+		jest.spyOn(mockStore, "bills").mockImplementation(() => ({
+			list: async () => mockBillsList,
+			create: async (newBill) => {
+			mockBillsList.push(newBill);
+			}
+		}));
+		
+		// Vérifier les données initiales
+		const initialBillsList = await mockStore.bills().list();
+		expect(initialBillsList.length).toBe(2);
+
+
+		// Créer un nouveau "bill"
+		let bill = {
+			email: "employee@test.tld",
+			type: "Transport",
+			name: "Vol bliblablou",
+			amount: "153",
+			date: "2023-08-25",
+			vat: "10",
+			pct: "10",
+			commentary: "un test",
+			fileUrl: "http://127.0.0.1:8080/images/test.jpg",
+			fileName: "test.jpg",
+			status: "pending"
+			};
+
+		// Appeler la méthode 'create' du mockStore pour ajouter le nouveau "bill"
+		mockStore.bills().create(bill);
+		// Attendre que la longueur de la liste de "bills" soit de 3 (2 initiaux + 1 nouveau)
+		waitFor(() => expect(billsList.length).toBe(3));
 	});
-  });
-  
+});
